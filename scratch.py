@@ -3,8 +3,6 @@
 # 9/1/2020
 # -----------------------------------------------
 
-# using https://realpython.com/python-web-scraping-practical-introduction/
-
 import numpy as np
 import matplotlib.patches as mp
 from matplotlib import pyplot as plt
@@ -49,6 +47,7 @@ def createColorBar(numberTeams, splitList):
     return finalBar
 
 
+# creates the legend mapping color to tier # team
 def createHandles(splitList):
     handles = []
     for teamN in range(0, len(splitList) + 1):
@@ -57,6 +56,7 @@ def createHandles(splitList):
     return handles
 
 
+# updates htmlList with the relevant html team data specified by regionChoice
 def appendRegionData(regionChoice, htmlList):
     page = urlopen(BASEURL + REGIONURLLIST[regionChoice - 1])
     html_bytes = page.read()
@@ -70,6 +70,7 @@ def appendRegionData(regionChoice, htmlList):
         htmlList.append(htmlLine.split("\n"))
 
 
+# basic menu system to allow region selection, settings and exiting
 def openSettings(maxTeamCount, numSubdiv):
     exitFlag = False
     while not exitFlag:
@@ -96,9 +97,10 @@ def openSettings(maxTeamCount, numSubdiv):
     return maxTeamCount, numSubdiv
 
 
+# displays output
 def createPlot(keys, values):
     fig, ax = plt.subplots()
-    ax.bar(keys, values, color = colorBar)
+    ax.bar(keys, values, color=colorBar)
     plotTitle = REGIONLIST[choice - 1] + " VALORANT Team Ratings"
     if MAXTEAMS < 1000:
         plotTitle = "Top " + str(MAXTEAMS) + " " + plotTitle
@@ -108,20 +110,20 @@ def createPlot(keys, values):
     plt.grid(True)
     eloLow = values[len(values) - 1]
     eloHigh = values[0]
-    plt.ylim(eloLow - (eloLow % 100), eloHigh - (eloHigh % 100) + 100)  # dynamic y-range rounded by 100
+    plt.ylim(eloLow - (eloLow % 100) - 100, eloHigh - (eloHigh % 100) + 100)  # dynamic y-range rounded by 100
     plt.xticks(rotation=90)  # rotate team names to improve clarity
     plt.legend(handles=handleList)  # creates Team Tier key
     fig.set_size_inches(16, 12)
 
     print("Close graph window to return to selection menu.")
-    plt.show(block = True)
+    plt.show(block=True)
 
 
 COLORLIST = ["red", "orange", "yellow", "green", "blue", "purple", "pink", "brown", "gray"]
 REGIONLIST = ["World", "Europe", "North America", "Latin America", "Oceania", "Asia-Pacific", "Korea"]
 REGIONURLLIST = ["placeholder", "europe", "north-america", "latin-america", "oceania", "asia-pacific", "korea"]
 REGIONSHORTHAND = ["PLACEHOLDER", "EU", "NA", "LAT", "OCE", "ASIA", "KR"]
-MAXTEAMS = 1000
+MAXTEAMS = 10
 NUMSPLITS = 2
 BASEURL = "https://www.vlr.gg/rankings/"
 
@@ -166,7 +168,7 @@ while not exitMenu:
                     rating = int(line[a:a + b])
             teamElo[name] = rating
 
-        if choice == 1:
+        if choice == 1:  # special case for when "world" is selected, since vlr.gg does not list all teams together
             sortedTEV = sorted(teamElo.items(), key=lambda x: x[1], reverse=True)
             for tupleX in sortedTEV:
                 dicKeys.append(tupleX[0])
