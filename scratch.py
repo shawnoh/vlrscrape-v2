@@ -3,8 +3,6 @@
 # 9/1/2020
 # -----------------------------------------------
 
-# using https://realpython.com/python-web-scraping-practical-introduction/
-
 import numpy as np
 import matplotlib.patches as mp
 from matplotlib import pyplot as plt
